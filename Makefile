@@ -21,4 +21,4 @@ check: test/test
 	$<
 
 clean:
-	rm -rf $(OBJS) $(TEST_OBJS) pcc
+	rm -rf $(OBJS) $(TEST_OBJS) pcc test/test
