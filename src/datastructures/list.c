@@ -43,7 +43,7 @@ void *list_release_nt(struct list *list) {
     return list_release(list);
 }
 
-void list_append(struct list *list, void *item) {
+void list_append(struct list *list, void const *item) {
     assert(list->size <= list->cap);
     if (list->size == list->cap) {
         list->cap  = (list->cap)? 2*list->cap : 32;
@@ -63,7 +63,11 @@ void list_pop(struct list *list) {
     list->size--;
 }
 
+void *list_at_unchecked(struct list *list, size_t index) {
+    return list->data + (index * list->item_size);
+}
+
 void *list_at(struct list *list, size_t index) {
     assert(index < list->size);
-    return list->data + (index * list->item_size);
+    return list_at_unchecked(list, index);
 }
