@@ -68,6 +68,7 @@ enum token_type {
     // operators
     TOK_PLUS,
     TOK_MINUS,
+    TOK_ARROW,
     TOK_STAR,
     TOK_SLASH,
     TOK_PERCENT,
@@ -125,6 +126,7 @@ void token_stream_free(struct token_stream *stream);
 
 struct token const *token_stream_next(struct token_stream *stream);
 void token_stream_seek(struct token_stream *stream, int n);
-struct token const *token_stream_current(struct token_stream const *stream);
+void token_stream_set_index(struct token_stream *stream, size_t index);
+struct token const *token_stream_peek(struct token_stream *stream);
 
 #endif

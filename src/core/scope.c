@@ -13,26 +13,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <stdio.h>
-#include <parser/token.h>
-#include <datastructures/hashmap.h>
 
-int main() {
-    struct hashmap hashmap;
-    hashmap_init(&hashmap, ptr_value_hash, ptr_value_cmp, NULL);
+#include "scope.h"
+#include <string.h>
 
-    struct token_stream stream;
-    token_stream_init(&stream, stdin);
+struct scope *scope_push(struct arena *arena, struct scope *parent, char const *name, struct type type) {
+    struct scope *new_scope = arena_allocate(arena, sizeof(struct scope *));
+    new_scope->name = name;
+    new_scope->type = type;
+    new_scope->parent = parent;
+    return new_scope;
 
-    struct token const *tok;
-    for (;;) {
-        tok = token_stream_next(&stream);
-        assert(tok->type != TOK_INVALID);
-        if (tok->type == TOK_EOF)
-            break;
+}
 
-        printf("%u, '%s'\n", tok->type, tok->text);
-    }
+struct scope *scope_find(struct scope *head, char const *name) {
+    if (head == NULL || strcmp(head->name, name) == 0)
+        return head;
 
-    return 0;
+    return scope_find(head->parent, name);
 }

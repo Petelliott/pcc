@@ -99,6 +99,7 @@ static struct token get_2char_token(struct list *buffer, FILE *stream) {
     match_tok("+", TOK_PLUS)
     match_tok("--", TOK_MINUS_MINUS)
     match_tok("-=", TOK_MINUS_EQUAL)
+    match_tok("->", TOK_ARROW)
     match_tok("-", TOK_MINUS)
     match_tok("*=", TOK_STAR_EQUAL)
     match_tok("*", TOK_STAR)
@@ -206,6 +207,13 @@ void token_stream_seek(struct token_stream *stream, int n) {
     assert(stream->index <= stream->tokens.size);
 }
 
-struct token const *token_stream_current(struct token_stream const *stream) {
-    return list_at((struct list *)&stream->tokens, stream->index);
+void token_stream_set_index(struct token_stream *stream, size_t index) {
+    assert(index <= stream->tokens.size);
+    stream->index = index;
+}
+
+struct token const *token_stream_peek(struct token_stream *stream) {
+    struct token const* tok = token_stream_next(stream);
+    stream->index--;
+    return tok;
 }

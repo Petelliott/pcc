@@ -13,26 +13,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <stdio.h>
-#include <parser/token.h>
-#include <datastructures/hashmap.h>
 
-int main() {
-    struct hashmap hashmap;
-    hashmap_init(&hashmap, ptr_value_hash, ptr_value_cmp, NULL);
+#include "polymorphic.h"
+#include <stdlib.h>
 
-    struct token_stream stream;
-    token_stream_init(&stream, stdin);
+void poly_init_fn(struct hashmap *poly_map) {
+    hashmap_init(poly_map, ptr_key_hash, ptr_key_cmp, free);
+}
 
-    struct token const *tok;
-    for (;;) {
-        tok = token_stream_next(&stream);
-        assert(tok->type != TOK_INVALID);
-        if (tok->type == TOK_EOF)
-            break;
+void poly_register_variant(struct hashmap *poly_map, size_t key, void *fnptr) {
+    hashmap_insert(poly_map, (void *) key, fnptr);
+}
 
-        printf("%u, '%s'\n", tok->type, tok->text);
-    }
-
-    return 0;
+void const*poly_get_variant(struct hashmap *poly_map, struct polymorphic *obj) {
+    return hashmap_get(poly_map, (void *)obj->type);
 }

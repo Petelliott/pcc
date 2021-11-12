@@ -13,26 +13,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <stdio.h>
-#include <parser/token.h>
-#include <datastructures/hashmap.h>
+#ifndef PCC_ARENA_H
+#define PCC_ARENA_H
 
-int main() {
-    struct hashmap hashmap;
-    hashmap_init(&hashmap, ptr_value_hash, ptr_value_cmp, NULL);
+#include <stddef.h>
 
-    struct token_stream stream;
-    token_stream_init(&stream, stdin);
+struct arena_node;
+struct arena {
+    size_t block_size;
+    struct arena_node *head;
+};
 
-    struct token const *tok;
-    for (;;) {
-        tok = token_stream_next(&stream);
-        assert(tok->type != TOK_INVALID);
-        if (tok->type == TOK_EOF)
-            break;
+void arena_init(struct arena *arena, size_t block_size);
+void arena_free(struct arena *arena);
 
-        printf("%u, '%s'\n", tok->type, tok->text);
-    }
+void *arena_allocate(struct arena *arena, size_t size);
 
-    return 0;
-}
+char *arena_strdup(struct arena *arena, char const *str);
+
+#endif
